@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model Organization {
+    id        String   @id @default(uuid())
+    name      String
+    users     User[]
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("organizations")
+}
+
+model User {
+    id             String       @id @default(uuid())
+    profileImage   String?      @map("profile_image")
+    name           String
+    surname        String
+    position       String
+    admin          Boolean      @default(false)
+    email          String       @unique
+    emailVerified  Boolean      @default(false) @map("email_verified")
+    password       String
+    organizationId String       @map("organization_id")
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    createdAt      DateTime     @default(now()) @map("created_at")
+    updatedAt      DateTime     @updatedAt @map("updated_at")
+
+    @@map("users")
+}
+
+model Borrower {
+    id         String   @id @default(uuid())
+    name       String
+    surname    String
+    nationalId String   @map("national_id")
+    gender     String
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+
+    @@map("borrowers")
+}
+
+model Application {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("applications")
+}
+
+model CreditScore {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("credit_scores")
+}
