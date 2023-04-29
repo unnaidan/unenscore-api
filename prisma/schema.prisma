@@ -2,8 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider      = "prisma-client-js"
-    binaryTargets = ["native", "rhel-openssl-1.0.x"]
+    provider = "prisma-client-js"
 }
 
 datasource db {
@@ -12,11 +11,12 @@ datasource db {
 }
 
 model Organization {
-    id        String   @id @default(uuid())
+    id        String     @id @default(uuid())
     name      String
     users     User[]
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+    borrowers Borrower[]
+    createdAt DateTime   @default(now()) @map("created_at")
+    updatedAt DateTime   @updatedAt @map("updated_at")
 
     @@map("organizations")
 }
@@ -40,29 +40,83 @@ model User {
 }
 
 model Borrower {
-    id         String   @id @default(uuid())
-    name       String
-    surname    String
-    nationalId String   @map("national_id")
-    gender     String
-    createdAt  DateTime @default(now()) @map("created_at")
-    updatedAt  DateTime @updatedAt @map("updated_at")
+    id             String        @id @default(uuid())
+    name           String
+    surname        String
+    nationalId     String        @map("national_id")
+    gender         String
+    a1             String /// Аймаг, хот
+    a2             String /// Сум, дүүрэг
+    a3             String /// Баг, хороо
+    a4             Int           @db.UnsignedInt /// Хаяган дээрх хугацаа, жилээр
+    a5             Int           @db.UnsignedInt /// Нийт хаягийн өөрчлөлтийн тоо
+    a6             Boolean       @default(false) /// Одоогийн хаягтаа бүртгэлтэй эсэх
+    b1             Boolean       @default(false) /// Гэрлэсэн эсэх
+    b2             Int           @db.UnsignedInt /// Өрхийн гишүүдийн тоо
+    b3             Int           @db.UnsignedInt /// Өрхийн орлоготой гишүүдийн тоо
+    b4             Int           @db.UnsignedInt /// Өрхийн гишүүдийн дундаж наслалт
+    b5             Int           @db.UnsignedInt /// Өрхийн хадгаламжтай гишүүдийн тоо
+    b6             String /// Өрхийн амьдарч буй орон байр
+    c1             Int           @db.UnsignedInt /// Нийт ажилласан жил
+    c2             Int           @db.UnsignedInt /// Нийт ажилласан байгууллагын тоо
+    c3             String /// Ажлаас гарсан шалтгаан
+    c4             String /// Бизнесийн салбар
+    d1             String /// Боловсролын зэрэг
+    d2             String /// Мэргэжил
+    d3             String /// Сургалтанд хамрагдах байдал
+    d4             Boolean       @default(false) /// Төрийн шагнал хүртсэн эсэх
+    e1             Int           @db.UnsignedInt /// Үндсэн зээлдэгчийн орлого
+    e2             Int           @db.UnsignedInt /// Хамтран зээлдэгчийн орлого
+    e3             Int           @db.UnsignedInt /// Зээл хүүний зардал
+    e4             Int           @db.UnsignedInt /// Бусад зардал
+    f1             Int           @db.UnsignedInt /// Орон байрны үнэлгээ
+    f2             Int           @db.UnsignedInt /// Тээврийн хэрэгслийн үнэлгээ
+    f3             Int           @db.UnsignedInt /// Бизнесийн үл хөдлөх хөрөнгийн үнэлгээ
+    f4             Int           @db.UnsignedInt /// Бизнесийн тоног төхөөрөмжийн үнэлгээ
+    f5             Int           @db.UnsignedInt /// Хадгаламжийн мөнгөн дүн
+    g1             Boolean       @default(false) /// Зээлийн түүхтэй эсэх
+    g2             Int           @db.UnsignedInt /// Зээл авалтын тоо
+    g3             String /// Хамгийн их зээл авсан банк
+    g4             String /// Зээлийн түүх
+    applications   Application[]
+    organizationId String        @map("organization_id")
+    organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    createdAt      DateTime      @default(now()) @map("created_at")
+    updatedAt      DateTime      @updatedAt @map("updated_at")
 
     @@map("borrowers")
 }
 
 model Application {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+    id           String   @id @default(uuid())
+    amount       Int      @db.UnsignedInt
+    term         Int      @db.UnsignedInt
+    interestRate Float    @map("interest_rate")
+    borrowerId   String   @map("borrower_id")
+    borrower     Borrower @relation(fields: [borrowerId], references: [id], onDelete: Cascade)
+    score        Score?
+    createdAt    DateTime @default(now()) @map("created_at")
+    updatedAt    DateTime @updatedAt @map("updated_at")
 
     @@map("applications")
 }
 
-model CreditScore {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+model Score {
+    id            String      @id @default(uuid())
+    a1            String /// Зээлийн зэрэглэл
+    a2            Int         @db.UnsignedInt /// Зардал, орлогын харьцаа
+    a3            Float
+    a4            Int         @db.UnsignedInt /// Боломжит зээл
+    a5            Int         @db.UnsignedInt /// Зээлийн сарын төлбөр
+    a6            Float /// Зээлийн сарын төлбөр орлогын харьцаа
+    a7            Float /// Хүсч буй зээл боломжит зээлийн харьцаа
+    a8            Float /// Зээлийн эрсдэл орлогын харьцаа
+    a9            Float /// Зээл төлөгдөхгүй байх магадлал
+    a10           String /// Тайлбар
+    applicationId String      @unique @map("application_id")
+    application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+    createdAt     DateTime    @default(now()) @map("created_at")
+    updatedAt     DateTime    @updatedAt @map("updated_at")
 
-    @@map("credit_scores")
+    @@map("scores")
 }
