@@ -5,29 +5,20 @@ export class User {
     @Field(() => ID)
     id: string;
 
-    @Field()
-    admin: boolean;
-
-    @Field({ nullable: true })
-    name?: string;
-
-    @Field()
-    username: string;
-
     @Field({ nullable: true })
     profileImage?: string;
 
-    @Field({ nullable: true })
-    bio?: string;
-
-    @Field({ nullable: true })
-    contentWarning?: string;
+    @Field()
+    name: string;
 
     @Field()
-    theme: string;
+    surname: string;
 
     @Field()
-    verified: boolean;
+    position: string;
+
+    @Field()
+    admin: boolean;
 
     @Field()
     email?: string;
@@ -37,6 +28,9 @@ export class User {
 
     @HideField()
     password?: string;
+
+    @Field()
+    organizationId: string;
 
     @Field()
     createdAt: Date;

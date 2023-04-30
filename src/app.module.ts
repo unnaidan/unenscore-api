@@ -12,6 +12,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
+import { OrganizationModule } from './organization/organization.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { S3Module } from './s3/s3.module';
 import { DateScalar } from './scalars/date.scalar';
@@ -61,6 +62,7 @@ import { UserModule } from './user/user.module';
         }),
         AuthModule,
         FilesModule,
+        OrganizationModule,
         PrismaModule,
         S3Module,
         UserModule
