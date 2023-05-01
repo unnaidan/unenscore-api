@@ -5,11 +5,11 @@ import { Authenticate } from '../../custom-validation-decorators/authenticate.de
 @InputType()
 export class SignInInput {
     @Field({ nullable: true })
-    @IsNotEmpty({ message: 'Please enter an email' })
-    @Authenticate({ message: 'Sorry, your password was incorrect' })
+    @IsNotEmpty({ message: 'Имэйл хаяг оруулна уу' })
+    @Authenticate({ message: 'Имэйл хаяг эсвэл нууц үг буруу байна' })
     email: string;
 
     @Field({ nullable: true })
-    @IsNotEmpty({ message: 'Please enter a password' })
+    @IsNotEmpty({ message: 'Нууц үг оруулна уу' })
     password: string;
 }

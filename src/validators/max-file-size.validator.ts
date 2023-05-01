@@ -1,5 +1,5 @@
 import { FileValidator } from '@nestjs/common';
-import { S3Provider } from './../s3/s3.provider';
+import { S3Provider } from '../s3/s3.provider';
 
 export type MaxFileSizeValidatorOptions = {
     maxSize: number;

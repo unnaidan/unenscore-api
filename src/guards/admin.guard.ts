@@ -10,14 +10,14 @@ export class AdminGuard implements CanActivate {
                     .switchToHttp()
                     .getRequest()
                     .user
-                    .admin;
+                    .role === 'admin';
             case 'graphql':
                 return GqlExecutionContext
                     .create(context)
                     .getContext()
                     .req
                     .user
-                    .admin;
+                    .role === 'admin';
             default:
                 return false;
         }

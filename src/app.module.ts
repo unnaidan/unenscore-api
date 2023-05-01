@@ -10,12 +10,15 @@ import { UrlGeneratorModule } from 'nestjs-url-generator';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ApplicationModule } from './application/application.module';
 import { AuthModule } from './auth/auth.module';
+import { BorrowerModule } from './borrower/borrower.module';
 import { FilesModule } from './files/files.module';
 import { OrganizationModule } from './organization/organization.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { S3Module } from './s3/s3.module';
 import { DateScalar } from './scalars/date.scalar';
+import { ScoreModule } from './score/score.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -60,11 +63,14 @@ import { UserModule } from './user/user.module';
                 'guards'
             ]
         }),
+        ApplicationModule,
         AuthModule,
+        BorrowerModule,
         FilesModule,
         OrganizationModule,
         PrismaModule,
         S3Module,
+        ScoreModule,
         UserModule
     ],
     controllers: [

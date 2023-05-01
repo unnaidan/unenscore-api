@@ -18,7 +18,7 @@ export class User {
     position: string;
 
     @Field()
-    admin: boolean;
+    role: string;
 
     @Field()
     email?: string;

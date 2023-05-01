@@ -27,7 +27,7 @@ model User {
     name           String
     surname        String
     position       String
-    admin          Boolean      @default(false)
+    role           String       @default("user")
     email          String       @unique
     emailVerified  Boolean      @default(false) @map("email_verified")
     password       String
