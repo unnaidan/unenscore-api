@@ -43,7 +43,7 @@ model Borrower {
     id             String        @id @default(uuid())
     name           String
     surname        String
-    nationalId     String        @map("national_id")
+    nationalId     String        @unique @map("national_id")
     gender         String
     a1             String /// Аймаг, хот
     a2             String /// Сум, дүүрэг
@@ -105,7 +105,7 @@ model Score {
     id            String      @id @default(uuid())
     a1            String /// Зээлийн зэрэглэл
     a2            Int         @db.UnsignedInt /// Зардал, орлогын харьцаа
-    a3            Float
+    a3            Float /// Эрсдэл шингэсэн хүү
     a4            Int         @db.UnsignedInt /// Боломжит зээл
     a5            Int         @db.UnsignedInt /// Зээлийн сарын төлбөр
     a6            Float /// Зээлийн сарын төлбөр орлогын харьцаа

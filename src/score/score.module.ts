@@ -1,5 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { ApplicationModule } from '../application/application.module';
+import { BorrowerModule } from '../borrower/borrower.module';
 import { ScoreResolver } from './score.resolver';
 import { ScoreService } from './score.service';
 
@@ -12,7 +13,8 @@ import { ScoreService } from './score.service';
         ScoreService
     ],
     imports: [
-        forwardRef(() => ApplicationModule)
+        forwardRef(() => ApplicationModule),
+        forwardRef(() => BorrowerModule)
     ]
 })
 export class ScoreModule { }
