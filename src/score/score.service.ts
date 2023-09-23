@@ -326,10 +326,10 @@ export class ScoreService extends CrudService<Prisma.ScoreDelegate<false>, Prism
 
         return await this.create({
             a1: B64,
-            a2: B57,
+            a2: Math.round(B57),
             a3: B56,
-            a4: B58,
-            a5: B59,
+            a4: Math.round(B58),
+            a5: Math.round(B59),
             a6: B60,
             a7: B61,
             a8: B62,
