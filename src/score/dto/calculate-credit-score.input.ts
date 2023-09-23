@@ -22,7 +22,7 @@ export class CalculateCreditScoreInput {
 
     @Field({ nullable: true })
     @IsNotEmpty({ message: 'Хүйс сонгоно уу' })
-    @IsIn(['male', 'female'])
+    @IsIn(['Эр', 'Эм'])
     gender: string;
 
     @Field({ nullable: true })

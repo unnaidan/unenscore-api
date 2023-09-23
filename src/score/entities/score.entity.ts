@@ -33,9 +33,6 @@ export class Score {
     a9: number;
 
     @Field()
-    a10: string;
-
-    @Field()
     applicationId: string;
 
     @Field()

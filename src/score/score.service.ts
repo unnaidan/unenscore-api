@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Score } from '@prisma/client';
 import { merge } from 'lodash';
+import { erf } from 'mathjs';
 import { BorrowerService } from 'src/borrower/borrower.service';
 import { ApplicationService } from '../application/application.service';
 import { CrudService } from '../crud/crud.service';
@@ -40,6 +41,9 @@ export class ScoreService extends CrudService<Prisma.ScoreDelegate<false>, Prism
      * @returns {Promise}
      */
     async calculate(input: CalculateCreditScoreInput & { organizationId: string; }): Promise<Score> {
+        function calculatePercentage(number: number, percent: number) {
+            return number / 100 * percent;
+        }
         if (input.g1 === false) {
             input = merge(input, {
                 g2: 0,
@@ -181,10 +185,17 @@ export class ScoreService extends CrudService<Prisma.ScoreDelegate<false>, Prism
                 borrowerId: borrower.id
             }
         });
-
+        const F6 = -0.00089058062907;
+        const F8 = 0.793558058038;
+        const F12 = 0.0280132957077;
+        const F16 = 0.0105259782246;
+        const F17 = 0.0648405085294;
+        const F27 = 0.144074921088;
+        const F28 = -1.66582566353;
+        const F34 = 0.363222121673;
         const B3 = surname;
         const B4 = name;
-        const B5 = gender === 'male' ? 'Эр' : 'Эм';
+        const B5 = gender;
         const B6 = 51; // age
         const B8 = a1;
         const B9 = a2;
@@ -209,31 +220,22 @@ export class ScoreService extends CrudService<Prisma.ScoreDelegate<false>, Prism
         const B32 = e1;
         const B33 = e2;
         const B34 = B32 + B33;
-        const C5 = scores.gender[B5];
-        const C8 = scores.a1[B8];
-        const C20 = scores.b6[B20];
-        const C25 = scores.c4[B25];
-        const C27 = scores.d1[B27];
-        const C28 = scores.d2[B28];
-        const C34 = Math.log(B34);
-        const F6 = -0.00089058062907;
-        const F8 = 0.793558058038;
-        const F12 = 0.0280132957077;
-        const F16 = 0.0105259782246;
-        const F17 = 0.0648405085294;
-        const F27 = 0.144074921088;
-        const F28 = -1.66582566353;
-        const F34 = 0.363222121673;
         const G6 = B6 * F6;
+        const C8 = scores.a1[B8];
         const G8 = C8 * F8;
         const G12 = B12 * F12;
         const G16 = B16 * F16;
         const G17 = B17 * F17;
+        const C27 = scores.d1[B27];
         const G27 = C27 * F27;
+        const C28 = scores.d2[B28];
         const G28 = C28 * F28;
+        const C34 = Math.log(B34);
         const G34 = C34 * F34;
         const B35 = Math.exp(7.32077514027 + G6 + G8 + G12 + G16 + G17 + G27 + G28 + G34);
-        const C38 = Math.log(B35);
+        const B36 = e3;
+        const B37 = e4;
+        const B38 = B35 + B36 + B37;
         const B40 = f1;
         const B41 = f2;
         const B42 = f3;
@@ -241,21 +243,23 @@ export class ScoreService extends CrudService<Prisma.ScoreDelegate<false>, Prism
         const B44 = f5;
         const B47 = g1 ? 'Тийм' : 'Үгүй';
         const B48 = g2;
+        const B49 = g3;
+        const B50 = g4;
         const B53 = term;
         const B54 = interestRate;
         const B45 = B40 + B41 + B42 + B43 + B44;
+        const B52 = amount;
+        const C57 = ((1 - ((B33 - B35 - B36 - B37) > 0 ? 1 : ((B33 - B35 - B36 - B37) < 0 ? (-1 * (B33 - B35 - B36 - B37)) / B32 : 0))) === 0 ? 0.0001 : (1 - ((B33 - B35 - B36 - B37) > 0 ? 1 : ((B33 - B35 - B36 - B37) < 0 ? (-1 * (B33 - B35 - B36 - B37)) / B32 : 0))));
+        const B57 = C57 * 100;
+        const C5 = scores.gender[B5];
+        const C20 = scores.b6[B20];
+        const C25 = scores.c4[B25];
+        const C38 = Math.log(B35);
         const C45 = Math.log(B45 + 1);
         const C47 = g1 ? 1 : 0;
-        const B49 = g3;
-        const B50 = g4;
         const C49 = scores.g3[B49];
         const C50 = scores.g4[B50];
-        const B52 = amount;
         const C52 = Math.log(B52);
-        const B36 = e3;
-        const B37 = e4;
-        const C57 = ((1 - ((B33 - B35 - B36 - B37) > 0 ? 1 : ((B33 - B35 - B36 - B37) < 0 ? (-1 * (B33 - B35 - B36 - B37)) / B32 : 0))) === 0 ? 0.0001 : (1 - ((B33 - B35 - B36 - B37) > 0 ? 1 : ((B33 - B35 - B36 - B37) < 0 ? (-1 * (B33 - B35 - B36 - B37)) / B32 : 0))));
-        const B38 = B35 + B36 + B37;
         const D5 = -2.029488;
         const D6 = 0.284862 * C50;
         const D8 = 2.644356;
@@ -290,36 +294,34 @@ export class ScoreService extends CrudService<Prisma.ScoreDelegate<false>, Prism
         const E53 = B53 * D53;
         const I2 = -(-13.37652 + E5 + E6 + E8 + E11 + E16 + E17 + E18 + E20 + E25 + E27 + E28 + E38 + E45 + E47 + E49 + E53); // removed E34
         const I3 = 1 - Math.exp(I2) / (1 + Math.exp(I2));
-        const B57 = C57 * 100;
-        const I8 = B57;
-        const I9 = (1 - C57) * 0.7 / (B54 * 12);
+        const I8 = C57;
+        const I9 = (1 - C57) * 0.7 / calculatePercentage(12, B54);
         const I10 = 0.1;
         const I11 = 0.164284 * I10;
-        const I12 = (I10 - Math.sqrt(I10 ^ 2 - (I11 ^ 2) * I9)) / ((I11 ^ 2) * 0.5);
-        const B58 = (((1 + B54) ^ B53 - 1) / (B54 * (1 + B54) ^ B53)) * (1 - C57) * B34;
-        const B61 = B52 / (B58 * Math.exp((-B54 * B53)));
-        const I13 = ((((I11 ^ 2) * I12 * 0.5 - (I8 ^ 2) * 0.5) * (B53 / 12) - Math.log(B61)) / (I8 * Math.sqrt(B53 / 12)));
-        const I14 = ((((I11 ^ 2) * I12 * 0.5 + (I8 ^ 2) * 0.5) * (B53 / 12) - Math.log(B61)) / (I8 * Math.sqrt(B53 / 12)));
-        const I15 = NORM.S.DIST(I13, TRUE);
-        const I16 = NORM.S.DIST(I14, TRUE);
-
-        const B62 = (B52 / B58) * (1 - I15) - Math.exp(-B54 * B53) * Math.exp((I11 ^ 2) * 0.5 * I12) * (1 - I16);
+        const I12 = (I10 - Math.sqrt(I10 ** 2 - (I11 ** 2) * I9)) / ((I11 ** 2) * 0.5);
+        const B58 = (((1 + calculatePercentage(1, B54)) ** B53 - 1) / (calculatePercentage((1 + calculatePercentage(1, B54)) ** B53, B54))) * (1 - C57) * B34;
+        const B59 = (calculatePercentage((1 + calculatePercentage(1, B54)) ** B53, B54) / ((1 + calculatePercentage(1, B54)) ** B53 - 1)) * B52;
+        const B60 = B59 / B34;
+        const B61 = B52 / (B58 * Math.exp((-calculatePercentage(B53, B54))));
+        const I13 = ((((I11 ** 2) * I12 * 0.5 - (I8 ** 2) * 0.5) * (B53 / 12) - Math.log(B61)) / (I8 * Math.sqrt(B53 / 12)));
+        const I14 = ((((I11 ** 2) * I12 * 0.5 + (I8 ** 2) * 0.5) * (B53 / 12) - Math.log(B61)) / (I8 * Math.sqrt(B53 / 12)));
+        const I15 = erf(I13 / Math.sqrt(2)) / 2 + 0.5;
+        const I16 = erf(I14 / Math.sqrt(2)) / 2 + 0.5;
+        const B62 = (B52 / B58) * (1 - I15) - Math.exp(-calculatePercentage(B53, B54)) * Math.exp((I11 ** 2) * 0.5 * I12) * (1 - I16);
         const B63 = ((B62 < 0.4 ? B62 : 1) + I3) / 2;
         const B56 = B54 + B63 * 0.31;
-        const B59 = ((B54 * (1 + B54) ^ B53) / ((1 + B54) ^ B53 - 1)) * B52;
-        const B60 = B59 / B34;
         const B64 = ((0 <= B63 && B63 < 0.0005) ? "AAA" : ((0.0005 <= B63 && B63 < 0.0035) ? "AA" : ((0.0035 <= B63 && B63 < 0.0154) ? "A" : ((0.0154 <= B63 && B63 < 0.0469) ? "BBB" : ((0.0469 <= B63 && B63 < 0.1128) ? "BB" : ((0.1128 <= B63 && B63 < 0.397) ? "B" : ((0.397 <= B63 && B63 < 0.5) ? "CCC" : ((0.5 <= B63 && B63 < 0.5005) ? "CC" : ((0.5005 <= B63 && B63 < 0.5055) ? "C" : ((0.5055 <= B63 && B63 < 0.5492) ? "DDD" : ((0.5492 <= B63 && B63 < 0.9925) ? "DD" : "D")))))))))));
 
         console.log({
-            'Зээлийн зэрэглэл': B64,
-            'Зардал, орлогын харьцаа': B57,
             'Эрсдэл шингэсэн хүү': B56,
+            'Зардал, орлогын харьцаа': B57,
             'Боломжит зээл': B58,
             'Зээлийн сарын төлбөр': B59,
             'Зээлийн сарын төлбөр орлогын харьцаа': B60,
             'Хүсч буй зээл боломжит зээлийн харьцаа': B61,
             'Зээлийн эрсдэл орлогын харьцаа': B62,
-            'Зээл төлөгдөхгүй байх магадлал': B63
+            'Зээл төлөгдөхгүй байх магадлал': B63,
+            'Зээлийн зэрэглэл': B64
         });
 
         return await this.create({
@@ -332,7 +334,6 @@ export class ScoreService extends CrudService<Prisma.ScoreDelegate<false>, Prism
             a7: B61,
             a8: B62,
             a9: B63,
-            a10: 'Тайлбар',
             applicationId: application.id
         });
     };

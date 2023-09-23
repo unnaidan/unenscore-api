@@ -100,7 +100,6 @@ CREATE TABLE `scores` (
     `a7` DOUBLE NOT NULL,
     `a8` DOUBLE NOT NULL,
     `a9` DOUBLE NOT NULL,
-    `a10` VARCHAR(191) NOT NULL,
     `application_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
